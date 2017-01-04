@@ -1,4 +1,5 @@
 import {
+  scrape,
   scrapeSets,
   scrapeSetCards,
   scrapeCardDetails,
@@ -12,7 +13,8 @@ describe('Scraper', () => {
     .then((setCards) => {
       expect(Object.keys(setCards)).toHaveLength(274);
 
-      const setCard = setCards[2];
+      const setCard = setCards[1];
+      expect(setCard.index).toBe(2);
       expect(setCard.name).toBe('Aerial Responder');
       expect(setCard.type).toBe('Creature');
       expect(setCard.subtype).toBe('Dwarf Soldier');
@@ -31,4 +33,7 @@ describe('Scraper', () => {
       expect(cardDetails.rules).toHaveLength(1);
       expect(cardDetails.legalities.Vintage).toBe('Legal');
     }));
+
+  it('should scrape everything', () => scrape()
+    .then(everything => console.log(everything)), 30000);
 });

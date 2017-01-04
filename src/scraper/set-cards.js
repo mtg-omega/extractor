@@ -1,7 +1,10 @@
 export const url = 'http://magiccards.info/{SET}/{LANGUAGE}.html';
 
 export function scrape($) {
-  const setCards = {};
+  const setCards = [];
+  // Nuovi step:
+  // - Controllare la lingua della pagina
+  // - Per ogni lingua cambiare la regex (usando https://github.com/slevithan/xregexp) per il tipo
 
   const $setCards = $('table + hr + table tr + tr');
 
@@ -9,34 +12,38 @@ export function scrape($) {
     const $setCard = $(setCard);
 
     const $index = $setCard.find('td:first-child');
-    const index = $index.text();
+    const index = parseInt($index.text(), 10);
 
     const $name = $index.next('td');
     const name = $name.text();
 
     const $type = $name.next('td');
     const typeStr = $type.text();
+    console.log(typeStr);
 
-    const match = typeStr.match(/^(\w+)( (\w+))?(( — )([\w\s'-]+)( ([\d*]+)\/([\d*]+))?( \(Loyalty: (\d+)\))?)?$/);
+    const match = typeStr.match(/^([^\s～]+)( ([^\s]+))?((( — )|(～)|( ― ))([^\d]+)(([\d*]+)\/([\d*]+))?( \(Loyalty: (\d+)\))?)?$/);
     const type = match[3] || match[1];
     const supertype = match[3] ? match[1] : null;
-    const subtype = match[6] || null;
+    let subtype = match[9] || null;
+    if (subtype) {
+      subtype = subtype.trim();
+    }
 
-    let power = match[8];
+    let power = match[11];
     if (typeof power === 'undefined') {
       power = null;
     } else if (power !== '*') {
       power = parseInt(power, 10);
     }
 
-    let toughness = match[9];
+    let toughness = match[12];
     if (typeof toughness === 'undefined') {
       toughness = null;
     } else if (toughness !== '*') {
       toughness = parseInt(toughness, 10);
     }
 
-    const loyalty = match[11] || null;
+    const loyalty = match[14] || null;
 
     const $mana = $type.next('td');
     const mana = $mana.text();
@@ -47,7 +54,8 @@ export function scrape($) {
     const $artist = $rarity.next('td');
     const artist = $artist.text();
 
-    setCards[index] = {
+    setCards.push({
+      index,
       name,
       type,
       supertype,
@@ -58,7 +66,7 @@ export function scrape($) {
       mana,
       rarity,
       artist,
-    };
+    });
   });
 
   return setCards;

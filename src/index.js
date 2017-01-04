@@ -41,4 +41,28 @@ export function scrapeCardDetails(set, language, card) {
     .then($ => cardDetailsScraper.scrape($));
 }
 
+export function scrape() {
+  return scrapeSets()
+    .then((sets) => {
+      let setAbbrs = Object.keys(sets);
+      setAbbrs = [setAbbrs[0]];
+
+      return Promise.all(setAbbrs.map((setAbbr) => {
+        const name = sets[setAbbr].name;
+        const languages = Object.keys(name);
+
+        return Promise.all(languages.map(language => scrapeSetCards(setAbbr, language)
+            .then(setCards => setCards
+              .map(setCard => scrapeCardDetails(setAbbr, language, setCard.index)
+              .then(cardDetails => ({
+                set: name,
+                setId: setAbbr,
+                language,
+                ...setCard,
+                ...cardDetails,
+              }))))));
+      }));
+    });
+}
+
 export function export2mongo() {}

@@ -18,8 +18,8 @@ export function scrape($) {
       const setName = $set.text();
       const setAbbr = $set.next('small').text();
 
-      sets[setAbbr] = sets[setAbbr] || {};
-      sets[setAbbr][languageAbbr] = { name: setName };
+      sets[setAbbr] = sets[setAbbr] || { name: {} };
+      sets[setAbbr].name[languageAbbr] = setName;
     });
   });
 
