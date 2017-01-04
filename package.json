@@ -1,0 +1,49 @@
+{
+  "name": "mtg-omega-extractor",
+  "version": "0.0.1",
+  "description": "A simple scrapers that extracts all the cards from online databases",
+  "main": "index.js",
+  "scripts": {
+    "eslint": "eslint .",
+    "check": "npm run eslint",
+    "pretest": "npm run check",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtg-omega/extractor.git"
+  },
+  "keywords": [
+    "scraper",
+    "export",
+    "extractor"
+  ],
+  "author": "Niccolò Olivieri <niccolo@olivieriachille.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mtg-omega/extractor/issues"
+  },
+  "homepage": "https://github.com/mtg-omega/extractor#readme",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "config": "^1.24.0",
+    "hotvenue-utils": "git+https://github.com/hotvenue/utils.git",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {
+    "babel-jest": "^18.0.0",
+    "babel-preset-airbnb": "^2.1.1",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
+    "jest": "^18.1.0"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!hotvenue-*)"
+    ]
+  }
+}
