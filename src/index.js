@@ -3,6 +3,7 @@ import request from 'request-promise';
 
 import * as setsScraper from './scraper/sets';
 import * as setCardsScraper from './scraper/set-cards';
+import * as cardDetailsScraper from './scraper/card-details';
 
 const options = {
   headers: {
@@ -12,13 +13,32 @@ const options = {
 };
 
 export function scrapeSets() {
-  return request({ url: setsScraper.url, ...options })
+  return request({
+    url: setsScraper.url,
+    ...options,
+  })
     .then($ => setsScraper.scrape($));
 }
 
 export function scrapeSetCards(set, language) {
-  return request({ url: setCardsScraper.url.replace('{SET}', set).replace('{LANGUAGE}', language), ...options })
+  return request({
+    url: setCardsScraper.url
+      .replace('{SET}', set)
+      .replace('{LANGUAGE}', language),
+    ...options,
+  })
     .then($ => setCardsScraper.scrape($));
+}
+
+export function scrapeCardDetails(set, language, card) {
+  return request({
+    url: cardDetailsScraper.url
+      .replace('{SET}', set)
+      .replace('{LANGUAGE}', language)
+      .replace('{CARD}', card),
+    ...options,
+  })
+    .then($ => cardDetailsScraper.scrape($));
 }
 
 export function export2mongo() {}

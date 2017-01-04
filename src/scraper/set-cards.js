@@ -15,7 +15,28 @@ export function scrape($) {
     const name = $name.text();
 
     const $type = $name.next('td');
-    const type = $type.text();
+    const typeStr = $type.text();
+
+    const match = typeStr.match(/^(\w+)( (\w+))?(( — )([\w\s'-]+)( ([\d*]+)\/([\d*]+))?( \(Loyalty: (\d+)\))?)?$/);
+    const type = match[3] || match[1];
+    const supertype = match[3] ? match[1] : null;
+    const subtype = match[6] || null;
+
+    let power = match[8];
+    if (typeof power === 'undefined') {
+      power = null;
+    } else if (power !== '*') {
+      power = parseInt(power, 10);
+    }
+
+    let toughness = match[9];
+    if (typeof toughness === 'undefined') {
+      toughness = null;
+    } else if (toughness !== '*') {
+      toughness = parseInt(toughness, 10);
+    }
+
+    const loyalty = match[11] || null;
 
     const $mana = $type.next('td');
     const mana = $mana.text();
@@ -26,7 +47,18 @@ export function scrape($) {
     const $artist = $rarity.next('td');
     const artist = $artist.text();
 
-    setCards[index] = { name, type, mana, rarity, artist };
+    setCards[index] = {
+      name,
+      type,
+      supertype,
+      subtype,
+      power,
+      toughness,
+      loyalty,
+      mana,
+      rarity,
+      artist,
+    };
   });
 
   return setCards;
