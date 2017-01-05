@@ -34,10 +34,9 @@ describe('Scraper', () => {
       expect(cardDetails.legalities.Vintage).toBe('Legal');
     }));
 
-  it('should scrape everything', () => scrape()
-    .then((everything) => {
-      expect(everything).toHaveLength(1);
-      expect(everything[0]).toHaveLength(11);
-      expect(everything[0][0]).toHaveLength(274);
-    }), 30000);
+  it.skip('should scrape everything', () => scrape(100)
+    .then(({ sets, cards }) => {
+      expect(sets).toHaveLength(1);
+      expect(cards).toHaveLength(274);
+    }), 60000);
 });
