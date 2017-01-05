@@ -6,7 +6,7 @@ import {
 } from '../src/index';
 
 describe('Scraper', () => {
-  it('should scrape the sets', () => scrapeSets()
+  it.only('should scrape the sets', () => scrapeSets()
     .then(sets => expect(Object.keys(sets)).toHaveLength(213)));
 
   it('should scrape the set cards', () => scrapeSetCards('kld', 'en')
@@ -34,7 +34,7 @@ describe('Scraper', () => {
       expect(cardDetails.legalities.Vintage).toBe('Legal');
     }));
 
-  it.skip('should scrape everything', () => scrape(100)
+  it('should scrape everything', () => scrape(100)
     .then(({ sets, cards }) => {
       expect(sets).toHaveLength(1);
       expect(cards).toHaveLength(274);
