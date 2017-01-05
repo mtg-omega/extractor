@@ -1,6 +1,6 @@
 {
   "name": "mtg-omega-extractor",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "A simple scrapers that extracts all the cards from online databases",
   "main": "index.js",
   "scripts": {
