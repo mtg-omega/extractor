@@ -4,7 +4,7 @@ export function scrape($) {
   const setCards = [];
 
   const $abbrAndLang = $('h1 small');
-  const [set, language] = $abbrAndLang.text().split('/');
+  const [setId, language] = $abbrAndLang.text().split('/');
 
   const $setCards = $('table + hr + table tr + tr');
 
@@ -54,7 +54,7 @@ export function scrape($) {
     const artist = $artist.text();
 
     setCards.push({
-      set,
+      setId,
       language,
       index,
       name,

@@ -59,8 +59,6 @@ export function scrape() {
               .map(setCard => scrapeCardDetails(setAbbr, language, setCard.index)
               .then(cardDetails => ({
                 set: name,
-                setId: setAbbr,
-                language,
                 ...setCard,
                 ...cardDetails,
               }))))));
