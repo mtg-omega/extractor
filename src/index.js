@@ -45,7 +45,10 @@ export function scrape() {
   return scrapeSets()
     .then((sets) => {
       let setAbbrs = Object.keys(sets);
-      setAbbrs = [setAbbrs[0]];
+
+      if (process.env.NODE_ENV === 'test') {
+        setAbbrs = [setAbbrs[0]];
+      }
 
       return Promise.all(setAbbrs.map((setAbbr) => {
         const name = sets[setAbbr].name;
