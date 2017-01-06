@@ -12,128 +12,111 @@ const options = {
   transform: body => cheerio.load(body),
 };
 
-function wait(milliseconds = 0) {
-  const milliseconds2wait = Math.round(Math.random() * milliseconds);
-
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(), milliseconds2wait);
+export async function scrapeSets() {
+  const $ = await request({
+    url: setsScraper.url,
+    ...options,
   });
+
+  return setsScraper.scrape($);
 }
 
-export function scrapeSets(milliseconds2wait) {
-  return wait(milliseconds2wait)
-    .then(() => request({
-      url: setsScraper.url,
-      ...options,
-    })
-    .then($ => setsScraper.scrape($)));
+export async function scrapeSetCards(set, language) {
+  const $ = await request({
+    url: setCardsScraper.url
+      .replace('{SET}', set)
+      .replace('{LANGUAGE}', language),
+    ...options,
+  });
+
+  return setCardsScraper.scrape($);
 }
 
-export function scrapeSetCards(set, language, milliseconds2wait) {
-  return wait(milliseconds2wait)
-    .then(() => request({
-      url: setCardsScraper.url
-        .replace('{SET}', set)
-        .replace('{LANGUAGE}', language),
-      ...options,
-    }))
-    .then($ => setCardsScraper.scrape($));
+export async function scrapeCardDetails(set, language, card) {
+  const $ = await request({
+    url: cardDetailsScraper.url
+      .replace('{SET}', set)
+      .replace('{LANGUAGE}', language)
+      .replace('{CARD}', card),
+    ...options,
+  });
+
+  return cardDetailsScraper.scrape($);
 }
 
-export function scrapeCardDetails(set, language, card, milliseconds2wait) {
-  return wait(milliseconds2wait)
-    .then(() => request({
-      url: cardDetailsScraper.url
-        .replace('{SET}', set)
-        .replace('{LANGUAGE}', language)
-        .replace('{CARD}', card),
-      ...options,
-    }))
-    .then($ => cardDetailsScraper.scrape($));
-}
+export async function scrape() {
+  const sets = {};
+  const cards = {};
 
-export function scrape(milliseconds2wait) {
-  return scrapeSets(milliseconds2wait)
-    .then((sets) => {
-      let setAbbrs = Object.keys(sets);
+  const setList = await scrapeSets();
+  const setAbbrs = Object.keys(setList);
+  if (process.env.NODE_ENV === 'test') {
+    setAbbrs.splice(1);
+  }
 
-      if (process.env.NODE_ENV === 'test') {
-        setAbbrs = [setAbbrs[0]];
+  for (let i = 0, totSetAbbrs = setAbbrs.length; i < totSetAbbrs; i += 1) {
+    const setAbbr = setAbbrs[i];
+    const setNames = setList[setAbbr].name;
+    const setLanguages = Object.keys(setNames);
+
+    sets[setAbbr] = { code: setAbbr, name: {} };
+
+    for (let j = 0, totSetLanguages = setLanguages.length; j < totSetLanguages; j += 1) {
+      const language = setLanguages[j];
+      const setName = setNames[language];
+      const setCards = await scrapeSetCards(setAbbr, language);
+
+      sets[setAbbr].name[language] = setName;
+
+      for (let k = 0, totSetCards = setCards.length; k < totSetCards; k += 1) {
+        const setCard = setCards[k];
+        const cardId = `${setAbbr}_${setCard.index}`;
+
+        let cardDetails = {};
+
+        if (typeof cards[cardId] === 'undefined') {
+          cardDetails = await scrapeCardDetails(setAbbr, language, setCard.index);
+
+          cards[cardId] = {
+            setCode: setCard.setId,
+            code: cardId,
+            index: setCard.index,
+            power: setCard.power,
+            toughness: setCard.toughness,
+            loyalty: setCard.loyalty,
+            mana: setCard.mana,
+            rarity: setCard.rarity,
+            artist: setCard.artist,
+            convertedMana: cardDetails.convertedMana,
+            gathererId: cardDetails.gathererId,
+            rules: cardDetails.rules,
+            legalities: cardDetails.legalities,
+
+            name: {},
+            typeStr: {},
+            type: {},
+            superType: {},
+            subType: {},
+            ability: {},
+            flavor: {},
+          };
+        }
+
+        cards[cardId].name[language] = setCard.name;
+        cards[cardId].typeStr[language] = setCard.typeStr;
+        cards[cardId].type[language] = setCard.type;
+        cards[cardId].superType[language] = setCard.superType;
+        cards[cardId].subType[language] = setCard.subType;
+        cards[cardId].ability[language] = cardDetails.ability;
+        cards[cardId].flavor[language] = cardDetails.flavor;
       }
+    }
+  }
 
-      return Promise.all(setAbbrs.map((setAbbr) => {
-        const name = sets[setAbbr].name;
-        const languages = Object.keys(name);
-
-        return Promise.all(languages
-          .map(language => scrapeSetCards(setAbbr, language, milliseconds2wait)
-            .then(setCards => Promise.all(setCards
-              .map(setCard => scrapeCardDetails(setAbbr, language, setCard.index, milliseconds2wait)
-              .then(cardDetails => ({
-                set: name,
-                ...setCard,
-                ...cardDetails,
-              })))))));
-      }));
-    })
-    .then((rawSets) => {
-      const sets = {};
-      const cards = {};
-
-      rawSets.forEach((rawLanguages) => {
-        rawLanguages.forEach((rawCards) => {
-          rawCards.forEach((rawCard) => {
-            if (typeof sets[rawCard.setId] === 'undefined') {
-              sets[rawCard.setId] = {
-                code: rawCard.setId,
-                name: rawCard.set,
-              };
-            }
-
-            const cardId = `${rawCard.setId}_${rawCard.index}`;
-
-            if (typeof cards[cardId] === 'undefined') {
-              cards[cardId] = {
-                setCode: rawCard.setId,
-                code: cardId,
-                index: rawCard.index,
-                power: rawCard.power,
-                toughness: rawCard.toughness,
-                loyalty: rawCard.loyalty,
-                mana: rawCard.mana,
-                rarity: rawCard.rarity,
-                artist: rawCard.artist,
-                convertedMana: rawCard.convertedMana,
-                gathererId: rawCard.gathererId,
-                rules: rawCard.rules,
-                legalities: rawCard.legalities,
-
-                name: {},
-                typeStr: {},
-                type: {},
-                superType: {},
-                subType: {},
-                ability: {},
-                flavor: {},
-              };
-            }
-
-            cards[cardId].name[rawCard.language] = rawCard.name;
-            cards[cardId].typeStr[rawCard.language] = rawCard.typeStr;
-            cards[cardId].type[rawCard.language] = rawCard.type;
-            cards[cardId].superType[rawCard.language] = rawCard.superType;
-            cards[cardId].subType[rawCard.language] = rawCard.subType;
-            cards[cardId].ability[rawCard.language] = rawCard.ability;
-            cards[cardId].flavor[rawCard.language] = rawCard.flavor;
-          });
-        });
-      });
-
-      return {
-        sets: Object.keys(sets).map(key => sets[key]),
-        cards: Object.keys(cards).map(key => cards[key]),
-      };
-    });
+  return {
+    sets: Object.keys(sets).map(key => sets[key]),
+    cards: Object.keys(cards).map(key => cards[key]),
+  };
 }
 
 export function export2mongo() {}

@@ -6,10 +6,10 @@ import {
 } from '../src/index';
 
 describe('Scraper', () => {
-  it('should scrape the sets', () => scrapeSets()
+  it('should scrape the sets', async () => scrapeSets()
     .then(sets => expect(Object.keys(sets)).toHaveLength(213)));
 
-  it('should scrape the set cards', () => scrapeSetCards('kld', 'en')
+  it('should scrape the set cards', async () => scrapeSetCards('kld', 'en')
     .then((setCards) => {
       expect(Object.keys(setCards)).toHaveLength(274);
 
@@ -25,7 +25,7 @@ describe('Scraper', () => {
       expect(setCard.artist).toBe('Raoul Vitale');
     }));
 
-  it('should scrape the card details', () => scrapeCardDetails('isd', 'en', '228')
+  it('should scrape the card details', async () => scrapeCardDetails('isd', 'en', '228')
     .then((cardDetails) => {
       expect(cardDetails.convertedMana).toBe(5);
       expect(cardDetails.flavor).toBe('Nothing could break it but the fall.');
@@ -34,9 +34,9 @@ describe('Scraper', () => {
       expect(cardDetails.legalities.Vintage).toBe('Legal');
     }));
 
-  it.skip('should scrape everything', () => scrape(100)
+  it.only('should scrape everything', async () => scrape()
     .then(({ sets, cards }) => {
       expect(sets).toHaveLength(1);
       expect(cards).toHaveLength(274);
-    }), 60000);
+    }), 120000);
 });
