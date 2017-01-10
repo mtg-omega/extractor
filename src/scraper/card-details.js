@@ -1,6 +1,10 @@
-export const url = 'http://magiccards.info/{SET}/{LANGUAGE}/{CARD}.html';
+import request from '../request';
 
-export function scrape($) {
+const url = 'http://magiccards.info/{CODE}/{LANGUAGE}/{INDEX}.html';
+
+export default async function scrapeCardDetails({ code, language, index }) {
+  const $ = await request(url.replace('{CODE}', code).replace('{LANGUAGE}', language).replace('{INDEX}', index));
+
   const $info = $('form + hr + table + hr + table > tr:first-child > td:first-child + td');
 
   const $title = $info.find('> span:first-child');
