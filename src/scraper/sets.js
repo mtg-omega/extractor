@@ -5,9 +5,9 @@ const url = 'http://magiccards.info/sitemap.html';
 /**
  * Returns an array containing all the set objects
  *
- * @returns {Promise.<[{ name, abbr, language }]>}
+ * @returns {Promise.<[{ name, code, language }]>}
  */
-export async function scrapeRawSets() {
+export default async function scrapeSets() {
   const $ = await request(url);
 
   const sets = [];
@@ -25,26 +25,14 @@ export async function scrapeRawSets() {
       const $set = $(setDom);
 
       const name = $set.text();
-      const abbr = $set.next('small').text();
+      const code = $set.next('small').text();
 
       sets.push({
         name,
-        abbr,
+        code,
         language,
       });
     });
-  });
-
-  return sets;
-}
-
-export async function scrapeSets() {
-  const sets = {};
-  const rawSets = await scrapeRawSets();
-
-  rawSets.forEach(({ name, abbr, language }) => {
-    sets[abbr] = sets[abbr] || { name: {} };
-    sets[abbr].name[language] = name;
   });
 
   return sets;

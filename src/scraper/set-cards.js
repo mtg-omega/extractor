@@ -1,10 +1,11 @@
-export const url = 'http://magiccards.info/{SET}/{LANGUAGE}.html';
+import request from '../request';
 
-export function scrape($) {
+const url = 'http://magiccards.info/{CODE}/{LANGUAGE}.html';
+
+export default async function scrapeSetCards({ code, language }) {
+  const $ = await request(url.replace('{CODE}', code).replace('{LANGUAGE}', language));
+
   const setCards = [];
-
-  const $abbrAndLang = $('h1 small');
-  const [setId, language] = $abbrAndLang.text().split('/');
 
   const $setCards = $('table + hr + table tr + tr');
 
@@ -54,7 +55,7 @@ export function scrape($) {
     const artist = $artist.text();
 
     setCards.push({
-      setId,
+      setCode: code,
       language,
       index,
       name,
