@@ -1,12 +1,21 @@
-export const url = 'http://magiccards.info/sitemap.html';
+import request from '../request';
 
-export function scrape($) {
-  const sets = {};
+const url = 'http://magiccards.info/sitemap.html';
+
+/**
+ * Returns an array containing all the set objects
+ *
+ * @returns {Promise.<[{ name, abbr, language }]>}
+ */
+export async function scrapeRawSets() {
+  const $ = await request(url);
+
+  const sets = [];
   const languageAbbrs = $('h2 > small');
 
   languageAbbrs.each((languageAbbrIndex, languageAbbrDom) => {
     const $languageAbbr = $(languageAbbrDom);
-    const languageAbbr = $languageAbbr.text();
+    const language = $languageAbbr.text();
 
     const $h2 = $languageAbbr.parent('h2');
     const $table = $h2.next('table');
@@ -15,12 +24,27 @@ export function scrape($) {
     $sets.each((setIndex, setDom) => {
       const $set = $(setDom);
 
-      const setName = $set.text();
-      const setAbbr = $set.next('small').text();
+      const name = $set.text();
+      const abbr = $set.next('small').text();
 
-      sets[setAbbr] = sets[setAbbr] || { name: {} };
-      sets[setAbbr].name[languageAbbr] = setName;
+      sets.push({
+        name,
+        abbr,
+        language,
+      });
     });
+  });
+
+  return sets;
+}
+
+export async function scrapeSets() {
+  const sets = {};
+  const rawSets = await scrapeRawSets();
+
+  rawSets.forEach(({ name, abbr, language }) => {
+    sets[abbr] = sets[abbr] || { name: {} };
+    sets[abbr].name[language] = name;
   });
 
   return sets;
