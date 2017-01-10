@@ -23,10 +23,10 @@ export default async function scrapeSetCards({ code, language }) {
 
     const match = typeStr.match(/^([^\s～]+)( ([^—～―:]+))?((( — )|(～)|( ― )|( : ))([^\d\n]+)(([\d*]+)\/([\d*]+))?( \(Loyalty: (\d+)\))?)?$/);
     const type = match[3] || match[1];
-    const supertype = match[3] ? match[1] : null;
-    let subtype = match[10] || null;
-    if (subtype) {
-      subtype = subtype.trim();
+    const superType = match[3] ? match[1] : null;
+    let subType = match[10] || null;
+    if (subType) {
+      subType = subType.trim();
     }
 
     let power = match[12];
@@ -61,8 +61,8 @@ export default async function scrapeSetCards({ code, language }) {
       name,
       typeStr,
       type,
-      supertype,
-      subtype,
+      superType,
+      subType,
       power,
       toughness,
       loyalty,
