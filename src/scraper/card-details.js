@@ -2,6 +2,27 @@ import request from '../request';
 
 const url = 'http://magiccards.info/{CODE}/{LANGUAGE}/{INDEX}.html';
 
+/**
+ * Scrapes the "Card Details" page to retrieve some info that are not in the "Set" page:
+ * - convertedMana,
+ * - ability,
+ * - flavor,
+ * - gathererId,
+ * - rules,
+ * - legalities
+ *
+ * @param code      {String}
+ * @param language  {String}
+ * @param index     {Number}
+ * @returns {Promise.<{
+ *                     convertedMana: Number,
+ *                     ability: String,
+ *                     flavor: String,
+ *                     gathererId: Number,
+ *                     rules: [{ date, text }],
+ *                     legalities: { String: String }
+ *                     }>}
+ */
 export default async function scrapeCardDetails({ code, language, index }) {
   const $ = await request(url.replace('{CODE}', code).replace('{LANGUAGE}', language).replace('{INDEX}', index));
 

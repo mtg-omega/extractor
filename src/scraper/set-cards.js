@@ -2,6 +2,27 @@ import request from '../request';
 
 const url = 'http://magiccards.info/{CODE}/{LANGUAGE}.html';
 
+/**
+ * Scrapes the "Set" page to retrieve all the cards of a set, with basic info:
+ * - setCode,
+ * - language,
+ * - index,
+ * - name,
+ * - typeStr,
+ * - type,
+ * - superType,
+ * - subType,
+ * - power,
+ * - toughness,
+ * - loyalty,
+ * - mana,
+ * - rarity,
+ * - artist
+ *
+ * @param code      {String}
+ * @param language  {String}
+ * @returns {Promise.<Array>}
+ */
 export default async function scrapeSetCards({ code, language }) {
   const $ = await request(url.replace('{CODE}', code).replace('{LANGUAGE}', language));
 
