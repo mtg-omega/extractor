@@ -1,5 +1,17 @@
 {
   "log": {
     "level": "info"
+  },
+
+  "aws": {
+    "region": "eu-west-1",
+
+    "s3": {
+      "bucket": "mtg-omega"
+    },
+
+    "sqs": {
+      "queue": "mtg-omega-scraper"
+    }
   }
 }
