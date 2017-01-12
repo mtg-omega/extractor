@@ -12,8 +12,8 @@ describe('Scrape set cards', () => {
       expect(card.name).toBeDefined();
       expect(card.typeStr).toBeDefined();
       expect(card.type).toBeDefined();
-      expect(card.supertype).toBeDefined();
-      expect(card.subtype).toBeDefined();
+      expect(card.superType).toBeDefined();
+      expect(card.subType).toBeDefined();
       expect(card.power).toBeDefined();
       expect(card.toughness).toBeDefined();
       expect(card.loyalty).toBeDefined();
