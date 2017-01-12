@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/mtg-omega/extractor#readme",
   "dependencies": {
+    "aws-sdk": "^2.7.21",
     "cheerio": "^0.22.0",
     "config": "^1.24.0",
     "hotvenue-utils": "git+https://github.com/hotvenue/utils.git",

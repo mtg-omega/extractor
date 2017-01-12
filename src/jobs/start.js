@@ -1,12 +1,14 @@
-import config from 'config';
-import { sendMessage } from 'hotvenue-utils/utils/cloud';
-
+import { sqs } from '../aws';
 import scrapeSets from '../scraper/sets';
 
 export default async function handleStart(done) {
   const sets = await scrapeSets();
 
-  await Promise.all(sets.map(set => sendMessage(config.get('aws.sqs.queue'), JSON.stringify(set))));
+  await Promise.all(sets.map(set => sqs
+    .sendMessage({
+      MessageBody: JSON.stringify(set),
+    })
+    .promise()));
 
   if (done) {
     done();

@@ -1,10 +1,8 @@
-import config from 'config';
-import { purgeQueue } from 'hotvenue-utils/utils/cloud';
-
+import { sqs } from '../../src/aws';
 import handleStart from '../../src/jobs/start';
 
 describe('Jobs', () => {
-  afterEach(() => purgeQueue(config.get('aws.sqs.queue')));
+  afterEach(() => sqs.purgeQueue());
 
   it('should enqueue all the set objects', () => handleStart(), 20000);
 });
