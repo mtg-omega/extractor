@@ -1,6 +1,6 @@
-export function handleStart() {}
+import handleStart from './jobs/start';
 
-export function handleJob() {}
+export function handleConsumer() {}
 
 export function handler(event, context, done) {
   // Let's check who triggered the Lambda Function
@@ -16,7 +16,7 @@ export function handler(event, context, done) {
 
       case 'every-minute':
         // Lambda is triggered to launch the "consumer"
-        return handleJob(done);
+        return handleConsumer(done);
 
       default:
         throw new Error(`Unknown resource: ${resource}`);
